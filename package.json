@@ -1,0 +1,26 @@
+{
+  "name": "butic-issues",
+  "version": "1.0.0",
+  "description": "Mi primera aplicación de Autodesk APS, sirve para crear y gestionar incidencias en modelos BIM",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "server": "nodemon server"
+
+  },
+  "dependencies": {
+    "@aps_sdk/authentication": "^1.0.1",
+    "@aps_sdk/model-derivative": "^1.2.1",
+    "@aps_sdk/oss": "^1.3.3",
+    "express": "^5.2.1",
+    "express-formidable": "^1.2.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2",
+    "nodemon": "^3.1.14"
+  }
+}
