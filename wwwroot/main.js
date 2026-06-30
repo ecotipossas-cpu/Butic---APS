@@ -1,5 +1,21 @@
 import { initViewer, loadModel } from './viewer.js';
 
+const miPrimeraFuncion = () => {
+    const button = document.getElementById('myFirstButton');
+    const resetButton = document.getElementById('resetButton');
+    button.addEventListener('click', () => {
+        NOP_VIEWER.isolate(NOP_VIEWER.getSelection());
+        NOP_VIEWER.fitToView(NOP_VIEWER.getSelection());
+        NOP_VIEWER.clearSelection();
+    });
+    resetButton.addEventListener("click", () => {
+        NOP_VIEWER.showAll(),
+        NOP_VIEWER.fitToView()
+    })
+};
+
+miPrimeraFuncion()
+
 initViewer(document.getElementById('preview')).then(viewer => {
     const urn = window.location.hash?.substring(1);
     setupModelSelection(viewer, urn);
