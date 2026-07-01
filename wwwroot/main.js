@@ -2,17 +2,24 @@ import { initViewer, loadModel } from './viewer.js';
 
 const miPrimeraFuncion = () => {
     const button = document.getElementById('myFirstButton');
-    const resetButton = document.getElementById('resetButton');
-    button.addEventListener('click', () => {
-        NOP_VIEWER.isolate(NOP_VIEWER.getSelection());
-        NOP_VIEWER.fitToView(NOP_VIEWER.getSelection());
+    const resetButton = document.getElementById('resetButton');    
+    button.addEventListener('click', onButtonClick);
+    resetButton.addEventListener("click", onResetClick)
+}        
+ 
+const onButtonClick = () => {
+    const query = document.getElementById('query');
+    NOP_VIEWER.search(query.value, (dbIds) => {
+        NOP_VIEWER.isolate(dbIds);
+        NOP_VIEWER.fitToView(dbIds);
         NOP_VIEWER.clearSelection();
-    });
-    resetButton.addEventListener("click", () => {
-        NOP_VIEWER.showAll(),
-        NOP_VIEWER.fitToView()
-    })
-};
+    })    
+}        
+
+const onResetClick = () => {
+    NOP_VIEWER.showAll();
+    NOP_VIEWER.fitToView();
+}
 
 miPrimeraFuncion()
 
