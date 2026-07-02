@@ -29,7 +29,15 @@ const miSegundoEndpoint = (req, res, next) => {
         })
     }catch (error){
         console.error(error)
-    }
+}
 }
 
-module.exports = {miPrimerEndpoint, miSegundoEndpoint}
+const miTercerEndpoint = (req, res, next) => {
+    try {        
+        const id = req.params.id
+        res.send(`Hola ${id}`)
+        }
+    catch (error){}
+}
+
+module.exports = { miPrimerEndpoint, miSegundoEndpoint, miTercerEndpoint }
