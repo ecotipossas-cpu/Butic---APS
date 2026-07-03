@@ -8,19 +8,25 @@ const miPrimeraFuncion = () => {
 }        
  
 const onButtonClick = () => {
+    const red = new THREE.Vector4(1, 0, 0, 1);
     const query = document.getElementById('query');
     NOP_VIEWER.search(query.value, (dbIds) => {
         NOP_VIEWER.isolate(dbIds);
         NOP_VIEWER.fitToView(dbIds);
-        NOP_VIEWER.model.getBulkProperties(dbIds, ["Volume"], (res) => {
-            let suma = 0.00;
-            res.forEach((item) => {
-                suma += item.properties[0].displayValue;
-            })
-            console.log(`El volumen total es: ${suma.toFixed(2)} m3`);
-        });
+        NOP_VIEWER.model.getBulkProperties(dbIds,['Area'],(res) => {
+                let suma = 0.00;
+                res.forEach(item => {
+                    const area = item.properties[0].displayValue;
+                    suma += area;
+                    if (area < 10) {
+                        NOP_VIEWER.setThemingColor(item.dbId, red);
+                    }
+                });
+                console.log(`El Area total de la búsqueda es: ${suma.toFixed(2)} m2.`);
+            }
+        );
     });
-}        
+};  
 
 
 const onResetClick = () => {
