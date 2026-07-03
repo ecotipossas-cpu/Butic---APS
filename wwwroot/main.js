@@ -12,9 +12,16 @@ const onButtonClick = () => {
     NOP_VIEWER.search(query.value, (dbIds) => {
         NOP_VIEWER.isolate(dbIds);
         NOP_VIEWER.fitToView(dbIds);
-        NOP_VIEWER.clearSelection();
-    })    
+        NOP_VIEWER.model.getBulkProperties(dbIds, ["Volume"], (res) => {
+            let suma = 0.00;
+            res.forEach((item) => {
+                suma += item.properties[0].displayValue;
+            })
+            console.log(`El volumen total es: ${suma.toFixed(2)} m3`);
+        });
+    });
 }        
+
 
 const onResetClick = () => {
     NOP_VIEWER.showAll();

@@ -3,9 +3,11 @@ const miPrimerController = require("../controllers/miPrimerController")
 
 const router = express.Router()
 router.route("/")
-.get(miPrimerController.miPrimerEndpoint)
-.post(miPrimerController.miSegundoEndpoint)
+.get(miPrimerController.miPrimeraFuncion)
+.post(miPrimerController.miSegundaFuncion)
 
-router.route("/:id").get(miPrimerController.miTercerEndpoint)
+router.route("/:id").get(miPrimerController.miTerceraFuncion)
+
+router.route("/:id/status").get(miPrimerController.miCuartaFuncion)
 
 module.exports = router
