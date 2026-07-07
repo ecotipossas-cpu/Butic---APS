@@ -13,16 +13,31 @@ const onButtonClick = () => {
     NOP_VIEWER.search(query.value, (dbIds) => {
         NOP_VIEWER.isolate(dbIds);
         NOP_VIEWER.fitToView(dbIds);
-        NOP_VIEWER.model.getBulkProperties(dbIds,['Area'],(res) => {
-                let suma = 0.00;
+        NOP_VIEWER.model.getBulkProperties(dbIds,['Area',"Length","Volume"], (res) => {
+                let suma = {     
+                    count: res.length,               
+                    length: 0.00,
+                    area: 0.00,
+                    volume: 0.00
+                };
                 res.forEach(item => {
-                    const area = item.properties[0].displayValue;
-                    suma += area;
-                    if (area < 10) {
-                        NOP_VIEWER.setThemingColor(item.dbId, red);
+                    const length = item.properties.find(x => x.displayName === "Length")
+                    if (length) {
+                        suma.length += length.displayValue;
                     }
+                    const area = item.properties.find(x => x.displayName === "Area")
+                    if (area) {
+                        suma.area += area.displayValue;
+                    }
+                    const volume = item.properties.find(x => x.displayName === "Volume")
+                    if (volume) {
+                        suma.volume += volume.displayValue;
+                    }
+
                 });
-                console.log(`El Area total de la búsqueda es: ${suma.toFixed(2)} m2.`);
+                const textoArea = document.getElementById('textoArea');
+                textoArea.textContent = `El sumatorio de Área de la búsqueda es: ${suma.area.toFixed(2)} m2.`;
+                console.log(suma);
             }
         );
     });

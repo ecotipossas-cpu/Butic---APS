@@ -1,7 +1,10 @@
 const express = require('express');
 require("dotenv").config();
 const { PORT } = require('./config.js');
+const connectDb = require('./config/db.js');
 const miPrimerRouter = require('./routes/miPrimerRouter.js')
+
+connectDb();
 
 let app = express();
 app.use(express.json({limit: "50mb"}));
