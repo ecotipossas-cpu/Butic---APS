@@ -1,8 +1,9 @@
-const express = require('express');
 require("dotenv").config();
+const express = require('express');
 const { PORT } = require('./config.js');
 const connectDb = require('./config/db.js');
 const miPrimerRouter = require('./routes/miPrimerRouter.js')
+const issuesRouter = require('./routes/issuesRouter.js')
 
 connectDb();
 
@@ -13,6 +14,7 @@ app.use(require('./routes/auth.js'));
 app.use(require('./routes/models.js'));
 
 app.use('/api/endpoint', miPrimerRouter);
+app.use('/api/issues', issuesRouter);
 
 app.listen(PORT, function () {
     console.log(`Server listening on port ${PORT}...`);
