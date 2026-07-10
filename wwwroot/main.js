@@ -1,12 +1,32 @@
 import { initViewer, loadModel } from './viewer.js';
 
-const miPrimeraFuncion = () => {
+const miPrimeraFuncion = async () => {
     const button = document.getElementById('myFirstButton');
-    const resetButton = document.getElementById('resetButton');    
+    const resetButton = document.getElementById('resetButton');
+    const getIssuesButton = document.getElementById('getIssuesButton');
     button.addEventListener('click', onButtonClick);
     resetButton.addEventListener("click", onResetClick)
-}        
- 
+    
+    const res = await fetch('/api/issues')
+        const json = await res.json()
+        const issuesDiv = document.getElementById('issues')
+        issuesDiv.innerHTML = ''
+        const issueslist = document.createElement('ul')
+        json.data.forEach(issue => {
+            const issueItem = document.createElement('li')
+            issueItem.textContent = issue.name
+            issueslist.appendChild(issueItem)
+            
+        })
+
+        issuesDiv.appendChild(issueslist)
+
+
+        
+                               
+}
+
+
 const onButtonClick = () => {
     const red = new THREE.Vector4(1, 0, 0, 1);
     const query = document.getElementById('query');
