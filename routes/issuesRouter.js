@@ -3,6 +3,14 @@ const issuesController = require("../controllers/issuesController")
 
 const router = express.Router()
 router.route("/")
+.get(issuesController.getAllIssues)
 .post(issuesController.createIssue)
+
+router.route("/:id")
+.get(issuesController.getOneIssue)
+.delete(issuesController.deleteOneIssue)
+
+router.route("/:id").patch(issuesController.updateOneIssue)
+
 
 module.exports = router

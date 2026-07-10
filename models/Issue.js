@@ -6,9 +6,13 @@ const IssueSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true,
+    required: "El parametro name es obligatorio",
   },
   description: String,
+  date: {
+    type: Date,
+    default: Date.now,
+  },
 })
 
 const Issue = mongoose.model('Issue', IssueSchema)
