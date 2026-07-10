@@ -19,6 +19,7 @@ const miPrimeraFuncion = async () => {
             issueItem.addEventListener('click', (e) => {
                 const issueId = e.currentTarget.id;
                 alert(`Has clicado en el Issue: ${issueId}`);
+                NOP_VIEWER.select([2213,2590])
             })
                       
             issueslist.appendChild(issueItem);
