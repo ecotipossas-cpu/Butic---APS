@@ -13,17 +13,18 @@ const miPrimeraFuncion = async () => {
         issuesDiv.innerHTML = ''
         const issueslist = document.createElement('ul')
         json.data.forEach(issue => {
-            const issueItem = document.createElement('li')
-            issueItem.textContent = issue.name
-            issueslist.appendChild(issueItem)
-            
+            const issueItem = document.createElement('li');
+            issueItem.textContent = issue.name;
+            issueItem.id = issue._id;
+            issueItem.addEventListener('click', (e) => {
+                const issueId = e.currentTarget.id;
+                alert(`Has clicado en el Issue: ${issueId}`);
+            })
+                      
+            issueslist.appendChild(issueItem);
         })
-
-        issuesDiv.appendChild(issueslist)
-
-
-        
-                               
+        issuesDiv.appendChild(issueslist);
+                            
 }
 
 
