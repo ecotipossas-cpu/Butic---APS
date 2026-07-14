@@ -15,7 +15,7 @@ const createIssue = async (req, res, next) => {
 
 const getAllIssues = async (req, res, next) => {
   try {
-    const issues = await Issue.find()
+    const issues = await Issue.find().select("name status number")
     res.status(200).json({
       status: 'success',
       number: issues.length,
@@ -32,6 +32,12 @@ const getOneIssue = async (req, res, next) => {
   try {
     const id = req.params.id
     const issue = await Issue.findById(id)
+    if (!issue) {
+      return res.status(404).json({
+        status: 'error',
+        message: `No se ha encontrado el issue con id ${id}`,
+      })
+    }
     res.status(200).json({
       status: 'success',
       data: issue,
@@ -48,14 +54,17 @@ const deleteOneIssue = async (req, res, next) => {
   try {
     const id = req.params.id
     const issue = await Issue.findByIdAndDelete(id)
-    res.status(200).json({
-      status: 'success',
-      data: issue,
-    })
-
-  }catch (error) {
+    if (!issue) {
+      return res.status(404).json({
+        status: 'error',
+        message: `No se ha encontrado el issue con id ${id}`,
+      })
+    } else {
+    res.status(200).json()
+    }
+  } catch (error) {
     console.log(error)
-    res.status(400).json()
+    res.status(400).json({ status: 'error', message: error })
   }
 }
 
@@ -64,20 +73,55 @@ const updateOneIssue = async (req, res, next) => {
     const id = req.params.id
     const issue = await Issue.findByIdAndUpdate(id, req.body , {
       new: true,
-      runValidators: true
+      runValidators: true      
     })
-    res.status(200).json({
-      status: 'success',
-      data: issue,
-    })
-
-  }catch (error) {
+    if (!issue) {
+      res.status(404).json({
+        status: 'error',
+        message: `No se ha encontrado el issue con id ${id}`,
+      }) 
+    } else {
+      res.status(200).json({
+        status: 'success',
+        data: issue,
+      })
+    }
+  } catch (error) {
     console.log(error)
     res.status(400).json({ status: 'error', message: error })
   }
 
 }
 
+const getDbIdsByStatus = async (req,res,next) => {
+  try{
+    const groupedDbIds = await Issue.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          dbIds: { $addToSet:"$dbIds"}
+        }
+      }
+    ])
+   
+    const flattenedDbIds = groupedDbIds.map((group) => ({
+      _id: group._id,
+      dbIds: [].concat(...group.dbIds),
+    }))
+
+    res.status(200).json({
+      status: "success", 
+      number: flattenedDbIds.length,
+      data: flattenedDbIds,
+    
+    })
+  }catch (error) {
+    console.log(error)
+    res.status(400).json({ status: 'error', message: error })
+  }
+
+
+}
 
 
 
@@ -89,5 +133,6 @@ module.exports = {
   getAllIssues,
   getOneIssue,
   deleteOneIssue,
-  updateOneIssue
+  updateOneIssue,
+  getDbIdsByStatus
 }
