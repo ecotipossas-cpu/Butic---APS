@@ -25,12 +25,34 @@
     </div>
     <div class="container">
         <div id="panel">
-            <button id="showAll" title="Show All"disabled>Show All</button>
-            <button id="ColorByStatus" title="Color by status"disabled>Color by status</button>
-            <div id="issues"></div>
-        </div>
+            <div id="toolbar" class="card">
+                <button id="showAll" title="Show All"disabled>Show All</button>
+                <button id="ColorByStatus" title="Color by status"disabled>Color by status</button>     
+            </div>
+            <div id="issues" class="card"></div>
+            <div id="issueForm" class="card">
+                <form id="createIssue">
+                    <label for="number">Number:</label><br>
+                    <input type="text" id="number" name="number"><br>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name"><br><br>  
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description"></textarea>               
+                    <label for = "status" name="status">Status:</label>
+                    <select id="status" name="status">
+                        <option value="Leve">Status Leve</option>
+                        <option value="Moderado">Status Moderado</option>
+                        <option value="Grave">Status Grave</option>
+                    </select>
+                    <input type="submit" value="Create Issue">
+                </form>
+            </div>
+            <div id="categorias" class="card">
+                <h2>Categorias</h2>
+            </div>
+        </div>      
         <div id="preview"></div>        
-        </div>    
+    </div>    
     <div id="overlay"></div>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js"></script>
     <script src="/main.js" type="module"></script>

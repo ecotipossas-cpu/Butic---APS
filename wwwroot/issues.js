@@ -7,6 +7,15 @@ const GraveColor = new THREE.Vector4(1,0,0,1)
 export const initIssues = async (viewer) => {
     _viewer = viewer
     loadUI()
+    loadIssues()
+    
+}
+
+const loadCategories = () => {
+_viewer.model.getBulkProperties() //aqui voy...
+}
+
+const loadIssues = async () => {
     const res = await fetch('/api/issues')
     const json = await res.json()
     const issuesDiv = document.getElementById('issues')
@@ -22,9 +31,16 @@ export const initIssues = async (viewer) => {
         issueslist.appendChild(issueItem);
     })
     issuesDiv.appendChild(issueslist);
+
 }
+
+
 const loadUI = () => {
-    _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, () =>{        
+    const createIssueForm = document.getElementById("createIssue")
+    createIssueForm.addEventListener("submit", onFormSubmit)  
+  
+    _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, () =>{ 
+        loadCategories()       
         const showAll = document.getElementById('showAll');
         const colorByStatus = document.getElementById('ColorByStatus');
         showAll.disabled = false
@@ -50,9 +66,52 @@ const loadUI = () => {
         _viewer.isolate(dbIds)
         _viewer.fitToView(dbIds)
     })
-    })
-    
+    })    
 }
+
+const onFormSubmit = async (e) => {
+    // Evita que el formulario actue por defecto y cambie el navegador
+     e.preventDefault()
+     // Recupera los valores del formulario (number, name) y se crea el objeto body
+        const number = document.getElementById("number").value
+        const name = document.getElementById("name").value
+        const status = document.getElementById("status").value
+        const description = document.getElementById("description").value
+        console.log("status: ", status)
+        const dbIds = _viewer.getSelection()
+        const body = {
+            number,
+            name,
+            dbIds,
+            status,
+            description,
+        }
+        try {
+     //Se guarda con fetch POST el issue en la BD en Mongo
+          const res = await fetch (`/api/issues`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        })
+        console.log("res:", res)
+     //Se gestionan los errores al diligenciar el formulario
+        if (res.ok){
+            document.getElementById("number").value=""
+            document.getElementById("name").value=""
+            _viewer.clearSelection()
+        }else {
+            alert("Hay que indicar número y nombre de Issue")
+        }
+
+        loadIssues()        
+        } catch (error) {
+            
+        }
+          
+}
+
 
 const onIssueClick = async (e) => {
     const issueId = e.currentTarget.id

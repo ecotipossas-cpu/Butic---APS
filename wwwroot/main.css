@@ -19,8 +19,7 @@ h1 {
 }
 
 #panel {
-    flex: 40%;
-    background-color: gray
+    flex: 40%;    
 }
 
 
@@ -71,4 +70,26 @@ h1 {
 #models {
     flex: 0 1 auto;
     min-width: 2em;
+}
+
+.card {
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: gray;
+    border-radius: 5px;
+    box-shadow: 0 0 5px  rgba(0,0,0,0.3);
+}
+
+button {
+    background-color: #0074d9;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
 }
