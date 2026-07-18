@@ -1,3 +1,4 @@
+import { getAllLeafComponentsAsync } from './utils.js'
 let _viewer;
 let _categories;
 const leveColor = new THREE.Vector4(1,1,0,1)
@@ -16,9 +17,10 @@ const onlyUnique = (value, index, array) => {
     return array.indexOf(value) ===index
 }
 
-const loadCategories = (parameter) => {
-    return new Promise((resolve, reject) => {
-        _viewer.model.getBulkProperties(null, [parameter], (res) => {
+const loadCategories = async (parameter) => {
+    const dbIds = await getAllLeafComponentsAsync (_viewer)
+    return new Promise((resolve, reject) => {        
+        _viewer.model.getBulkProperties(dbIds, [parameter], (res) => {
         let categories = {}
         res.forEach (item => {
             const category = item.properties[0].displayValue
@@ -67,9 +69,10 @@ const loadIssues = async () => {
     const issueslist = document.createElement('ul')
     json.data.forEach(issue => {
         const issueItem = document.createElement('li');
-        issueItem.textContent = `#${issue.number} ${issue.name} - ${issue.status}`
-        const color = getColorHexByStatus(issue.status)
-        issueItem.style.color = color
+        const circulo = document.createElement("div")
+        circulo.className = "circulo"
+        issueItem.appendChild(circulo)
+        issueItem.appendChild(document.createTextNode(issue.name))        
         issueItem.id = issue._id;
         issueItem.addEventListener('click', onIssueClick);                      
         issueslist.appendChild(issueItem);
@@ -82,9 +85,8 @@ const loadIssues = async () => {
 const loadUI = () => {
     const createIssueForm = document.getElementById("createIssue")
     createIssueForm.addEventListener("submit", onFormSubmit)  
-  
     _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, async () =>{ 
-        _categories = await loadCategories()
+        _categories = await loadCategories("Category")
         printCategories()         
         const showAll = document.getElementById('showAll');
         const colorByStatus = document.getElementById('ColorByStatus');

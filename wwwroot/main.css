@@ -93,3 +93,21 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.list  {
+    height: 150px;
+    overflow-y: auto;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.circulo {
+    background-color: yellow;
+    border-radius: 50px;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    margin-right: 5px;
+}
