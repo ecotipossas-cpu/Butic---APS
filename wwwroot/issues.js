@@ -70,9 +70,9 @@ const loadIssues = async () => {
     json.data.forEach(issue => {
         const issueItem = document.createElement('li');
         const circulo = document.createElement("div")
-        circulo.className = "circulo"
+        circulo.className = `circulo ${issue.status}`
         issueItem.appendChild(circulo)
-        issueItem.appendChild(document.createTextNode(issue.name))        
+        issueItem.appendChild(document.createTextNode(`#${issue.number} - ${issue.name} `));
         issueItem.id = issue._id;
         issueItem.addEventListener('click', onIssueClick);                      
         issueslist.appendChild(issueItem);

@@ -36,6 +36,15 @@ service.ensureBucketExists = async (bucketKey) => {
         }
     }
 };
+service.listBuckets = async () => {
+    const accessToken = await getInternalToken();
+    const resp = await ossClient.getBuckets({ accessToken });
+    return resp.items;
+};
+
+
+
+
 
 service.listObjects = async () => {
     await service.ensureBucketExists(APS_BUCKET);

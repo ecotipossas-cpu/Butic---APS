@@ -104,10 +104,21 @@ ul {
 }
 
 .circulo {
-    background-color: yellow;
     border-radius: 50px;
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
     display: inline-block;
     margin-right: 5px;
+}
+
+.Leve{
+    background-color: yellow;
+}
+
+.Moderado{
+    background-color: Orange;
+}
+
+.Grave{
+    background-color: Red;
 }

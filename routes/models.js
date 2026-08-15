@@ -1,10 +1,21 @@
 const express = require('express');
 const formidable = require('express-formidable');
-const { listObjects, uploadObject, translateObject, getManifest, urnify } = require('../services/aps.js');
+const { listBuckets, listObjects, uploadObject, translateObject, getManifest, urnify } = require('../services/aps.js');
 
 let router = express.Router();
 
+router.get('/api/buckets', async (req, res, next) => {
+    try {
+        const buckets = await listBuckets();
+        res.status(200).json(buckets);    
+    }catch (error) {
+        next(error)        
+    }
+})
+
+
 router.get('/api/models', async function (req, res, next) {
+
     try {
         const objects = await listObjects();
         res.json(objects.map(o => ({
