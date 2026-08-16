@@ -39,12 +39,33 @@ service.ensureBucketExists = async (bucketKey) => {
 service.listBuckets = async () => {
     const accessToken = await getInternalToken();
     const resp = await ossClient.getBuckets({ accessToken });
-    return resp.items;
+
+    const buckets = resp.items.map((bucket) => {
+        let name = bucket.bucketKey.split('-')[0];
+        if (name === process.env.APS_CLIENT_ID.toLowerCase()) {
+            name = '<sinNombre>';
+        }
+        return name;
+    });
+
+    console.log('buckets: ', buckets);
+
+    return buckets;
 };
 
+service.createBucket = async (bucketName) => {
+    const accessToken = await getInternalToken();
+    
+    const bucketKey = `${bucketName}-${process.env.APS_CLIENT_ID.toLowerCase()}`;
 
+    const bucket = await ossClient.createBucket(
+        Region.Us,
+        { bucketKey, policyKey: PolicyKey.Persistent },
+        { accessToken }
+    );
 
-
+    return bucket;
+};
 
 service.listObjects = async () => {
     await service.ensureBucketExists(APS_BUCKET);
