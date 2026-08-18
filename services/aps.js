@@ -67,16 +67,36 @@ service.createBucket = async (bucketName) => {
     return bucket;
 };
 
-service.listObjects = async () => {
-    await service.ensureBucketExists(APS_BUCKET);
+service.ensureBucketExists = async (bucketKey) => {
     const accessToken = await getInternalToken();
-    let resp = await ossClient.getObjects(APS_BUCKET, { limit: 64, accessToken });
+    try {
+        await ossClient.getBucketDetails(bucketKey, { accessToken });
+    } catch (err) {
+        if (err.axiosError?.response?.status === 404 || err.status === 404) {
+            await ossClient.createBucket(
+                Region.Us,
+                { bucketKey, policyKey: PolicyKey.Persistent },
+                { accessToken }
+            );
+        } else {
+            throw err;
+        }
+    }
+};
+
+service.listObjects = async (bucketKey = APS_BUCKET) => {
+    await service.ensureBucketExists(bucketKey);
+    const accessToken = await getInternalToken();
+
+    let resp = await ossClient.getObjects(bucketKey, { limit: 64, accessToken });
     let objects = resp.items;
+
     while (resp.next) {
         const startAt = new URL(resp.next).searchParams.get('startAt');
-        resp = await ossClient.getObjects(APS_BUCKET, { limit: 64, startAt, accessToken });
+        resp = await ossClient.getObjects(bucketKey, { limit: 64, startAt, accessToken });
         objects = objects.concat(resp.items);
     }
+
     return objects;
 };
 

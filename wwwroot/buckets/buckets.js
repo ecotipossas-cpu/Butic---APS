@@ -1,16 +1,43 @@
 const init = () => {
     const bucketForm = document.getElementById("createBucket");
-    bucketForm.addEventListener("submit", onFormSubmit);
-
-    // Solo llamamos a listBuckets(), ella se encarga del fetch y de dibujar la lista
+    if (bucketForm) {
+        bucketForm.addEventListener("submit", onFormSubmit);
+    }
     listBuckets();
 };
 
+const onBucketClick = async (e) => {
+  const bucketId = e.currentTarget.id
+  const res = await fetch(`/api/models/${bucketId}`)
+  const json = await res.json()
+  const modelsDiv = document.getElementById('models')
+  modelsDiv.innerHTML = ''
+  if (json.length > 0) {    
+    modelsDiv.innerHTML = ''
+    const modelsList = document.createElement('ul')
+    json.forEach((model) => {
+      const modelItem = document.createElement('li')
+      modelItem.textContent = model.name
+      modelItem.id = model.urn
+      modelItem.addEventListener('click', onModelClick)
+      modelsList.appendChild(modelItem)
+    })
+    modelsDiv.appendChild(modelsList)
+  } else {
+    modelsDiv.appendChild(document.createTextNode(
+        "El bucket seleccionado no tiene modelos. Añade uno con el boton de Upload"))
+  }
+}
+
+const onModelClick = (e) => {
+    const urn = e.currentTarget.id
+    window.location.href = "/?urn=" + urn
+}
+
+
 const listBuckets = async () => {
     const res = await fetch('/api/buckets');
-    const json = await res.json();
-    console.log("json: ", json);
-    
+    const json = await res.json(); 
     const bucketsDiv = document.getElementById('buckets');
     bucketsDiv.innerHTML = '';
     const bucketsList = document.createElement('ul');
@@ -19,9 +46,10 @@ const listBuckets = async () => {
         const bucketItem = document.createElement('li');
         bucketItem.textContent = bucket;
         bucketItem.id = bucket;
-        bucketItem.addEventListener('click', () => {
+        bucketItem.style.cursor = 'pointer'; // Cambia el cursor para indicar que es clickeable
+        
+        bucketItem.addEventListener('click', onBucketClick);
 
-        });
         bucketsList.appendChild(bucketItem);
     });
     
@@ -35,7 +63,7 @@ const onFormSubmit = async (e) => {
         name: bucketName,
     };
     
-    const res = await fetch('/api/buckets', {
+    await fetch('/api/buckets', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
