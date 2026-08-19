@@ -100,10 +100,10 @@ service.listObjects = async (bucketKey = APS_BUCKET) => {
     return objects;
 };
 
-service.uploadObject = async (objectName, filePath) => {
-    await service.ensureBucketExists(APS_BUCKET);
+service.uploadObject = async (bucketKey, objectName, filePath) => {
+    await service.ensureBucketExists(bucketKey);
     const accessToken = await getInternalToken();
-    const obj = await ossClient.uploadObject(APS_BUCKET, objectName, filePath, { accessToken });
+    const obj = await ossClient.uploadObject(bucketKey, objectName, filePath, { accessToken });
     return obj;
 };
 

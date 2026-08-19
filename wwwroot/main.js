@@ -54,12 +54,11 @@ const onResetClick = () => {
 
 miPrimeraFuncion()
 
-
 initViewer(document.getElementById('preview')).then(viewer => {
     initIssues(viewer);
-    const urn = window.location.hash?.substring(1);
-    setupModelSelection(viewer, urn);
-    setupModelUpload(viewer);
+    const urlParams = new URLSearchParams(window.location.search);
+    const urn = urlParams.get('urn')
+    loadModel(viewer, urn);
 });
 
 async function setupModelSelection(viewer, selectedUrn) {
