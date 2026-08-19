@@ -18,7 +18,7 @@ app.use('/api/issues', issuesRouter);
 
 // Routing
 app.get('/buckets', (req, res) => {
-    res.sendFile(__dirname + '/wwwroot/buckets');
+    res.sendFile(__dirname + '/wwwroot/viewer');
 })
 
 
