@@ -28,15 +28,24 @@ export function initViewer(container) {
     });
 }
 
-export function loadModel(viewer, urn) {
+export function loadModel(viewer, urn, is2d) {
     return new Promise(function (resolve, reject) {
         function onDocumentLoadSuccess(doc) {
-            resolve(viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry()));
+            const root = doc.getRoot();
+            let node = root.getDefaultGeometry();
+            if (is2d) {
+                node = root.getSheetNodes()[0];
+            }
+            resolve(viewer.loadDocumentNode(doc, node));
         }
         function onDocumentLoadFailure(code, message, errors) {
             reject({ code, message, errors });
         }
         viewer.setLightPreset(0);
-        Autodesk.Viewing.Document.load('urn:' + urn, onDocumentLoadSuccess, onDocumentLoadFailure);
+        Autodesk.Viewing.Document.load(
+            'urn:' + urn,
+            onDocumentLoadSuccess,
+            onDocumentLoadFailure
+        );
     });
 }

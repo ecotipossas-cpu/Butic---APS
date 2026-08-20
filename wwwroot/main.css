@@ -22,10 +22,14 @@ h1 {
     flex: 40%;    
 }
 
+.viewers {
+    flex: 60%;
+}
 
-#preview {    
+#preview, 
+#preview2 {    
     position: relative;
-    width: 60%;
+    height: calc((100vh - 3em)/2);
 }
 
 #header {
@@ -39,9 +43,6 @@ h1 {
 #overlay {
     top: 3em;
     bottom: 0;
-}
-
-#overlay {
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 1em;
@@ -79,7 +80,7 @@ h1 {
     padding: 20px;
     background-color: gray;
     border-radius: 5px;
-    box-shadow: 0 0 5px  rgba(0,0,0,0.3);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
 
 button {
@@ -90,11 +91,12 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
 button:hover {
     background-color: #0056b3;
 }
 
-.list  {
+.list {
     height: 150px;
     overflow-y: auto;
 }
@@ -111,15 +113,15 @@ ul {
     margin-right: 5px;
 }
 
-.Leve{
+.Leve {
     background-color: yellow;
 }
 
-.Moderado{
+.Moderado {
     background-color: Orange;
 }
 
-.Grave{
+.Grave {
     background-color: Red;
 }
 
@@ -128,4 +130,15 @@ ul {
     height: 100%;
     text-align: center;
     padding: 20px;
+}
+
+.bucketCard {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    text-align: center;
+    display: inline-block;
+    width: 350px;
+    height: 250px;
 }

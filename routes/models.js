@@ -1,6 +1,15 @@
 const express = require('express');
 const formidable = require('express-formidable');
-const { listBuckets, createBucket, listObjects, uploadObject, translateObject, getManifest, urnify } = require('../services/aps.js');
+const { 
+    listBuckets, 
+    createBucket, 
+    listObjects, 
+    getThumbnail, 
+    uploadObject, 
+    translateObject, 
+    getManifest, 
+    urnify 
+} = require('../services/aps.js');
 
 let router = express.Router();
 
@@ -8,24 +17,21 @@ router.get('/api/buckets', async (req, res, next) => {
     try {
         const buckets = await listBuckets();
         res.status(200).json(buckets);    
-    }catch (error) {
-        next(error)        
+    } catch (error) {
+        next(error);        
     }
-})
+});
 
 router.post('/api/buckets', async (req, res, next) => {
     try {
         const bucket = await createBucket(req.body.name.toLowerCase());
-        res.status(200).json({status: "success", data: bucket});
+        res.status(200).json({ status: "success", data: bucket });
     } catch (error) {
-        next(error)
+        next(error);
     }
-})
+});
 
-
-
-
-// 1. Ruta fija que usa la página principal (main.js / viewer.js)
+// 1. Ruta fija usada por la página principal
 router.get('/api/models', async function (req, res, next) {
     try {
         const objects = await listObjects();
@@ -40,10 +46,11 @@ router.get('/api/models', async function (req, res, next) {
     }
 });
 
-// 2. Ruta dinámica cuando filtras por un bucket específico
+// 2. Ruta dinámica con miniatura (thumbnail) incorporada
 router.get('/api/models/:bucketKey', async function (req, res, next) {
     try {
-        let bucketKey = req.params.bucketKey;
+        let bucketKey = decodeURIComponent(req.params.bucketKey);
+
         if (bucketKey === '<sinNombre>') {
             bucketKey = process.env.APS_CLIENT_ID.toLowerCase() + "-basic-app";
         } else {
@@ -51,11 +58,20 @@ router.get('/api/models/:bucketKey', async function (req, res, next) {
         }
 
         const objects = await listObjects(bucketKey);
+
+        // Novedad: Obtención asíncrona de miniaturas con Promise.all
         res.json(
-            objects.map((o) => ({
-                name: o.objectKey,
-                urn: urnify(o.objectId)
-            }))
+            await Promise.all(
+                objects.map(async (o) => {
+                    const urn = urnify(o.objectId);
+                    const thumbnail = await getThumbnail(urn);
+                    return {
+                        name: o.objectKey,
+                        urn,
+                        thumbnail
+                    };
+                })
+            )
         );
     } catch (err) {
         next(err);
@@ -72,7 +88,7 @@ router.get('/api/models/:urn/status', async function (req, res, next) {
                     messages = messages.concat(derivative.messages || []);
                     if (derivative.children) {
                         for (const child of derivative.children) {
-                            messages.concat(child.messages || []);
+                            messages = messages.concat(child.messages || []);
                         }
                     }
                 }
@@ -87,12 +103,13 @@ router.get('/api/models/:urn/status', async function (req, res, next) {
 });
 
 router.post('/api/models/:bucketKey', formidable({ maxFileSize: Infinity }), async function (req, res, next) {
-    let bucketKey = req.params.bucketKey;
+    let bucketKey = decodeURIComponent(req.params.bucketKey);
     if (bucketKey === '<sinNombre>') {
-            bucketKey = process.env.APS_CLIENT_ID.toLowerCase() + "-basic-app";
-        } else {
-            bucketKey = `${bucketKey}-${process.env.APS_CLIENT_ID.toLowerCase()}-basic-app`;
-        }
+        bucketKey = process.env.APS_CLIENT_ID.toLowerCase() + "-basic-app";
+    } else {
+        bucketKey = `${bucketKey}-${process.env.APS_CLIENT_ID.toLowerCase()}-basic-app`;
+    }
+
     const file = req.files['model-file'];
     if (!file) {
         res.status(400).send('The required field ("model-file") is missing.');

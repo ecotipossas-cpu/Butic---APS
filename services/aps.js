@@ -1,6 +1,6 @@
 const { AuthenticationClient, Scopes } = require('@aps_sdk/authentication');
 const { OssClient, Region, PolicyKey } = require('@aps_sdk/oss');
-const { ModelDerivativeClient, View, OutputType } = require('@aps_sdk/model-derivative');
+const { ModelDerivativeClient, View, OutputType, Width } = require('@aps_sdk/model-derivative');
 const { APS_CLIENT_ID, APS_CLIENT_SECRET, APS_BUCKET } = require('../config.js');
 
 const authenticationClient = new AuthenticationClient();
@@ -29,13 +29,18 @@ service.ensureBucketExists = async (bucketKey) => {
     try {
         await ossClient.getBucketDetails(bucketKey, { accessToken });
     } catch (err) {
-        if (err.axiosError.response.status === 404) {
-            await ossClient.createBucket(Region.Us, { bucketKey: bucketKey, policyKey: PolicyKey.Persistent }, { accessToken});
+        if (err.axiosError?.response?.status === 404 || err.status === 404) {
+            await ossClient.createBucket(
+                Region.Us,
+                { bucketKey, policyKey: PolicyKey.Persistent },
+                { accessToken }
+            );
         } else {
             throw err;
         }
     }
 };
+
 service.listBuckets = async () => {
     const accessToken = await getInternalToken();
     const resp = await ossClient.getBuckets({ accessToken });
@@ -56,7 +61,8 @@ service.listBuckets = async () => {
 service.createBucket = async (bucketName) => {
     const accessToken = await getInternalToken();
     
-    const bucketKey = `${bucketName}-${process.env.APS_CLIENT_ID.toLowerCase()}`;
+    // Agregamos -basic-app para mantener coherencia con routes/models.js
+    const bucketKey = `${bucketName}-${process.env.APS_CLIENT_ID.toLowerCase()}-basic-app`;
 
     const bucket = await ossClient.createBucket(
         Region.Us,
@@ -67,20 +73,25 @@ service.createBucket = async (bucketName) => {
     return bucket;
 };
 
-service.ensureBucketExists = async (bucketKey) => {
+service.getThumbnail = async (urn) => {
     const accessToken = await getInternalToken();
     try {
-        await ossClient.getBucketDetails(bucketKey, { accessToken });
-    } catch (err) {
-        if (err.axiosError?.response?.status === 404 || err.status === 404) {
-            await ossClient.createBucket(
-                Region.Us,
-                { bucketKey, policyKey: PolicyKey.Persistent },
-                { accessToken }
-            );
-        } else {
-            throw err;
+        // Petición directa a la API de Autodesk para obtener el buffer binario puro
+        const response = await fetch(`https://developer.api.autodesk.com/modelderivative/v2/designdata/${urn}/thumbnail?width=400`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (!response.ok) {
+            return 'no-image';
         }
+
+        const arrayBuffer = await response.arrayBuffer();
+        return Buffer.from(arrayBuffer).toString('base64');
+    } catch (error) {
+        console.error('Error en getThumbnail:', error);
+        return 'no-image';
     }
 };
 
@@ -131,7 +142,7 @@ service.getManifest = async (urn) => {
         const manifest = await modelDerivativeClient.getManifest(urn, { accessToken });
         return manifest;
     } catch (err) {
-        if (err.axiosError.response.status === 404) {
+        if (err.axiosError?.response?.status === 404 || err.status === 404) {
             return null;
         } else {
             throw err;
