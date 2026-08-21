@@ -128,7 +128,7 @@ service.translateObject = async (urn, rootFilename) => {
         },
         output: {
             formats: [{
-                views: [View._2d, View._3d],
+                views: [View._2d, View._3d],                
                 type: OutputType.Svf2
             }]
         }

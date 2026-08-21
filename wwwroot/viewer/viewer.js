@@ -18,7 +18,7 @@ export function initViewer(container) {
     return new Promise(function (resolve, reject) {
         Autodesk.Viewing.Initializer({ env: 'AutodeskProduction', getAccessToken }, function () {
             const config = {
-                extensions: ['Autodesk.DocumentBrowser']
+                extensions: []
             };
             const viewer = new Autodesk.Viewing.GuiViewer3D(container, config);
             viewer.start();
@@ -34,8 +34,23 @@ export function loadModel(viewer, urn, is2d) {
             const root = doc.getRoot();
             let node = root.getDefaultGeometry();
             if (is2d) {
-                node = root.getSheetNodes()[0];
-            }
+                const nodes2d = root.getSheetNodes()                
+                const dropdown = document.getElementById('nodes2d')
+                dropdown.innerHTML = nodes2d
+                    .map(
+                    (node2d) => `<option value=${node2d.data.guid}>${node2d.data.name}</option>`
+                    )
+                    .join('\n')
+                dropdown.addEventListener('change', (e) => {
+                    const guid = e.currentTarget.value
+                    const actualNode = viewer.model.getDocumentNode()
+                    viewer.unloadDocumentNode(actualNode)
+                    const newNode = root.findByGuid(guid)                    
+                    viewer.loadDocumentNode(doc, newNode)
+                })
+                node = nodes2d[0]
+                console.log('node: ', node)
+                }
             resolve(viewer.loadDocumentNode(doc, node));
         }
         function onDocumentLoadFailure(code, message, errors) {
@@ -49,3 +64,4 @@ export function loadModel(viewer, urn, is2d) {
         );
     });
 }
+
